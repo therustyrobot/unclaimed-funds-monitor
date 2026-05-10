@@ -126,3 +126,7 @@ Edit the `cron` line in `.github/workflows/check.yml`:
 - Searching is 100% free — these are official government databases
 - Never pay a third-party "finder fee" to claim funds you locate here
 - The scraper uses a real headless Chromium browser to handle Cloudflare protections naturally
+
+## Please be responsible
+
+Use a sensible search interval. The default (1st of every month) is intentionally conservative. If many people run this tool aggressively — hourly, daily, or across dozens of states simultaneously — state databases may rate-limit or block automated traffic, breaking access for everyone. Once a month is more than enough for unclaimed property that often sits for years. Be a good citizen of these public resources.
