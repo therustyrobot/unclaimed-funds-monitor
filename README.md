@@ -1,4 +1,7 @@
-# 💰 Unclaimed Funds Monitor
+<img width="1376" height="768" alt="Unclaimed_Funds_Finder_title_202605092116" src="https://github.com/user-attachments/assets/c6cae2ea-a7c8-4739-9d75-d90cdae6985a" />
+<img width="1376" height="768" alt="Unclaimed_Funds_Finder_title_202605092114" src="https://github.com/user-attachments/assets/dc890090-2ba2-4c49-b227-944d0e3bbe9b" />
+
+# Unclaimed Funds Finder
 
 Automatically searches state unclaimed property databases on the 1st of every month and emails results directly to you — nothing is stored publicly anywhere.
 
