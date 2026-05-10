@@ -1,6 +1,33 @@
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
 .env
 .venv/
 venv/
+env/
+
+# Playwright
+playwright-report/
+test-results/
+
+# Logs & output
+*.log
+output/
+results/
+
+# OS
 .DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp

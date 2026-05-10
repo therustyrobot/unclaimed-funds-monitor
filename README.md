@@ -60,11 +60,56 @@ Available states:
 
 | Code | State | Official site |
 |------|-------|---------------|
-| `TN` | Tennessee | unclaimedproperty.tn.gov |
-| `IA` | Iowa | unclaimedproperty.iowa.gov |
-| `TX` | Texas | claimittexas.gov |
-| `FL` | Florida | fltreasurehunt.gov |
+| `AL` | Alabama | treasury.alabama.gov/unclaimed-property |
+| `AK` | Alaska | treasury.dor.alaska.gov/Unclaimed-Property.aspx |
+| `AZ` | Arizona | azdor.gov/unclaimed-property |
+| `AR` | Arkansas | claimit.ar.gov |
 | `CA` | California | claimit.ca.gov |
+| `CO` | Colorado | colorado.findyourunclaimedproperty.com |
+| `CT` | Connecticut | ctbiglist.com |
+| `DE` | Delaware | unclaimedproperty.delaware.gov |
+| `FL` | Florida | fltreasurehunt.gov |
+| `GA` | Georgia | dor.georgia.gov/unclaimed-property-program |
+| `HI` | Hawaii | unclaimedproperty.ehawaii.gov |
+| `ID` | Idaho | yourmoney.idaho.gov |
+| `IL` | Illinois | icash.illinoistreasurer.gov |
+| `IN` | Indiana | indianaunclaimed.gov |
+| `IA` | Iowa | unclaimedproperty.iowa.gov |
+| `KS` | Kansas | kansascash.ks.gov |
+| `KY` | Kentucky | treasury.ky.gov/unclaimedproperty |
+| `LA` | Louisiana | treasury.la.gov/unclaimed-property |
+| `ME` | Maine | maineunclaimedproperty.gov |
+| `MD` | Maryland | marylandtaxes.gov/unclaimed-property |
+| `MA` | Massachusetts | findmassmoney.com |
+| `MI` | Michigan | unclaimedproperty.michigan.gov |
+| `MN` | Minnesota | mn.gov/commerce/consumers/your-money/find-missing-money |
+| `MS` | Mississippi | treasury.ms.gov/unclaimed-money |
+| `MO` | Missouri | treasurer.mo.gov/unclaimedproperty |
+| `MT` | Montana | mtreasure.mt.gov |
+| `NE` | Nebraska | treasurer.nebraska.gov/up |
+| `NV` | Nevada | claimitnv.gov |
+| `NH` | New Hampshire | nh.gov/treasury/unclaimed-property |
+| `NJ` | New Jersey | unclaimedfunds.nj.gov |
+| `NM` | New Mexico | tax.newmexico.gov/businesses/unclaimed-property |
+| `NY` | New York | osc.ny.gov/unclaimed-funds |
+| `NC` | North Carolina | nccash.com |
+| `ND` | North Dakota | land.nd.gov/unclaimed-property |
+| `OH` | Ohio | com.ohio.gov/unfd |
+| `OK` | Oklahoma | oktreasure.com/unclaimed-property |
+| `OR` | Oregon | unclaimed.oregon.gov |
+| `PA` | Pennsylvania | patreasury.gov/unclaimed-property |
+| `RI` | Rhode Island | findrimoney.com |
+| `SC` | South Carolina | treasurer.sc.gov/our-office/programs/unclaimed-property-program |
+| `SD` | South Dakota | southdakota.findyourunclaimedproperty.com |
+| `TN` | Tennessee | unclaimedproperty.tn.gov |
+| `TX` | Texas | claimittexas.gov |
+| `UT` | Utah | mycash.utah.gov |
+| `VT` | Vermont | vermontunclaimedproperty.gov |
+| `VA` | Virginia | vamoneysearch.gov |
+| `WA` | Washington | ucp.dor.wa.gov |
+| `WV` | West Virginia | wvtreasury.com/Unclaimed-Property |
+| `WI` | Wisconsin | statetreasury.wi.gov/ucp |
+| `WY` | Wyoming | wyuincash.wyo.gov |
 
 To add a state not listed, add an entry to the `STATES` dict in `src/scraper.py`. Most states use the same SWS platform — just swap in the correct base URL.
 
