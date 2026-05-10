@@ -174,10 +174,10 @@ def build_text(results, total_hits, hits):
     return "\n".join(lines)
 
 
-def send_sendgrid(api_key, to_email, subject, html, text):
+def send_sendgrid(api_key, to_email, from_email, subject, html, text):
     payload = json.dumps({
         "personalizations": [{"to": [{"email": to_email}]}],
-        "from": {"email": "noreply@example.com", "name": "Unclaimed Funds Monitor"},
+        "from": {"email": from_email, "name": "Unclaimed Funds Monitor"},
         "subject": subject,
         "content": [{"type": "text/plain", "value": text},
                     {"type": "text/html",  "value": html}],
@@ -235,8 +235,13 @@ def main():
         print(f"\nTO: {to_email}\nSUBJECT: {subject}\n\n{text}")
         return
 
+    # SendGrid requires the from address to be a verified Sender Identity.
+    # Default to NOTIFICATION_EMAIL (the address you already control and verified).
+    # Override with SENDGRID_FROM_EMAIL if you want a different verified sender.
+    from_email = os.environ.get("SENDGRID_FROM_EMAIL", "").strip() or to_email
+
     print(f"Sending email to {to_email}...")
-    send_sendgrid(api_key, to_email, subject, html, text)
+    send_sendgrid(api_key, to_email, from_email, subject, html, text)
 
 
 if __name__ == "__main__":

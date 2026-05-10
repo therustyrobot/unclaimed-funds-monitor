@@ -55,6 +55,8 @@ you@example.com
 2. Permission: "Mail Send" only
 3. Copy the key and save it as this secret
 
+**Verify your sender address** — SendGrid requires the from address to be verified before it will send mail. Go to **Settings → Sender Authentication → Single Sender Verification** and verify the same email you used for `NOTIFICATION_EMAIL`. That's the address emails will be sent from. If you'd prefer a different verified from address, add it as a `SENDGRID_FROM_EMAIL` secret.
+
 ### 3. Run it
 Actions → Check Unclaimed Funds → Run workflow
 
