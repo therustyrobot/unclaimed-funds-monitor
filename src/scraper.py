@@ -78,11 +78,13 @@ def load_config():
 
 
 async def search_person_state(browser, state_cfg, person):
-    base_url    = state_cfg["base_url"]
     api_path    = state_cfg["api_path"]
     search_page = state_cfg["search_page"]
-    captured    = {"token": ""}
-    results     = []
+
+    all_results = []
+    total_expected = [0]   # mutable so the response handler can update it
+    response_received = asyncio.Event()
+    response_error = [None]
 
     ctx = await browser.new_context(
         user_agent=(
@@ -91,91 +93,86 @@ async def search_person_state(browser, state_cfg, person):
             "Chrome/124.0.0.0 Safari/537.36"
         ),
         locale="en-US",
+        viewport={"width": 1280, "height": 800},
     )
     page = await ctx.new_page()
 
-    def on_request(req):
-        tok = req.headers.get("x-sws-turnstile-token", "")
-        if tok.strip():
-            captured["token"] = tok
+    async def on_response(response):
+        if api_path not in response.url:
+            return
+        try:
+            data = await response.json()
+        except Exception:
+            return
+        if data.get("status") in (400, 401, 403, 500):
+            response_error[0] = f"API status {data.get('status')}: {data.get('clientMessage','')}"
+            response_received.set()
+            return
+        batch = data.get("content") or data.get("properties") or []
+        all_results.extend(batch)
+        total_expected[0] = data.get("totalElements") or data.get("total") or len(all_results)
+        response_received.set()
 
-    page.on("request", on_request)
+    page.on("response", on_response)
 
     try:
         await page.goto(search_page, wait_until="domcontentloaded", timeout=30_000)
+        # Give Turnstile time to complete its invisible challenge in the real browser session
         await page.wait_for_timeout(4_000)
 
+        # Fill the search form and submit — the browser carries its own valid session/token
+        ln = page.locator(
+            'input[name="lastName"], input[placeholder*="Last"], '
+            'input[formcontrolname="lastName"]'
+        ).first
+        await ln.fill(person["last_name"], timeout=5_000)
+
         try:
-            ln = page.locator(
-                'input[name="lastName"], input[placeholder*="Last"], '
-                'input[formcontrolname="lastName"]'
+            fn = page.locator(
+                'input[name="firstName"], input[placeholder*="First"], '
+                'input[formcontrolname="firstName"]'
             ).first
-            await ln.fill(person["last_name"], timeout=5_000)
-            btn = page.locator('button[type="submit"], button:has-text("Search")').first
-            await btn.click(timeout=5_000)
-            await page.wait_for_timeout(3_000)
+            await fn.fill(person.get("first_name", ""), timeout=3_000)
         except Exception:
             pass
 
-        token     = captured["token"]
-        page_num  = 0
-        page_size = 25
+        btn = page.locator('button[type="submit"], button:has-text("Search")').first
+        await btn.click(timeout=5_000)
 
-        while True:
-            payload = {
-                "lastName":  person["last_name"],
-                "firstName": person.get("first_name", ""),
-                "page":      page_num,
-                "pageSize":  page_size,
-            }
+        # Wait for the browser's own API response to come back
+        try:
+            await asyncio.wait_for(response_received.wait(), timeout=15)
+        except asyncio.TimeoutError:
+            raise RuntimeError("Timed out waiting for search results from API")
 
-            api_resp = await page.evaluate(
-                """
-                async ([url, payload, token]) => {
-                    try {
-                        const r = await fetch(url, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json, text/plain, */*',
-                                'X-SWS-Turnstile-Token': token,
-                            },
-                            body: JSON.stringify(payload),
-                        });
-                        const txt = await r.text();
-                        try { return { ok: true, data: JSON.parse(txt) }; }
-                        catch(e) { return { ok: false, error: txt.slice(0, 200) }; }
-                    } catch(e) { return { ok: false, error: String(e) }; }
-                }
-                """,
-                [f"{base_url}{api_path}", payload, token],
-            )
+        if response_error[0]:
+            raise RuntimeError(response_error[0])
 
-            if not api_resp.get("ok"):
-                raise RuntimeError(f"API error: {api_resp.get('error','')[:120]}")
-
-            data = api_resp["data"]
-            if data.get("status") in (400, 401, 403, 500):
-                raise RuntimeError(f"API status {data.get('status')}: {data.get('clientMessage','')}")
-
-            batch = data.get("content") or data.get("properties") or []
-            if not batch:
+        # Paginate by clicking Next until we have all results
+        while len(all_results) < total_expected[0]:
+            response_received.clear()
+            try:
+                next_btn = page.locator(
+                    'button:has-text("Next"), [aria-label="Next page"], '
+                    '.pagination-next, li.page-item:last-child button'
+                ).first
+                await next_btn.click(timeout=3_000)
+                try:
+                    await asyncio.wait_for(response_received.wait(), timeout=10)
+                except asyncio.TimeoutError:
+                    break
+                if response_error[0]:
+                    break
+            except Exception:
                 break
-
-            results.extend(batch)
-            total = data.get("totalElements") or data.get("total") or 0
-            if len(results) >= total or len(batch) < page_size:
-                break
-            page_num += 1
 
     except Exception as e:
         print(f"    Exception: {e}")
         raise
     finally:
-        page.remove_listener("request", on_request)
         await ctx.close()
 
-    return results
+    return all_results
 
 
 async def run(people, config):
